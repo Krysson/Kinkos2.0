@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install @tanstack/react-query react-hook-form @hookform/resolvers zod lucide-react date-fns class-variance-authority clsx tailwind-merge sonner)",
+      "Bash(npx shadcn@latest init -d)",
+      "Bash(npx shadcn@latest add button card input label dialog dropdown-menu tabs avatar checkbox select switch tooltip popover scroll-area table badge separator sheet skeleton)",
+      "Bash(chmod:*)",
+      "Bash(ls:*)",
+      "Bash(npm install:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run dev:*)",
+      "Bash(tasklist:*)",
+      "Bash(netstat:*)"
+    ]
+  }
+}
