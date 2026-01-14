@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
 export type Shift = {
@@ -78,12 +78,13 @@ export function useShifts(filter?: 'all' | 'my-shifts' | 'available') {
       if (filter === 'my-shifts') {
         filteredShifts = filteredShifts.filter((shift) =>
           shift.shift_signups?.some(
-            (signup) => signup.member_id === member.id && !signup.cancelled_at
+            (signup: { member_id: string; cancelled_at: string | null }) =>
+              signup.member_id === member.id && !signup.cancelled_at
           )
         )
       } else if (filter === 'available') {
         filteredShifts = filteredShifts.filter((shift) => {
-          const activeSignups = shift.shift_signups?.filter((s) => !s.cancelled_at).length || 0
+          const activeSignups = shift.shift_signups?.filter((s: { cancelled_at: string | null }) => !s.cancelled_at).length || 0
           return activeSignups < shift.capacity
         })
       }
@@ -129,7 +130,7 @@ export function useSignUpForShift() {
 
       if (!shift) throw new Error('Shift not found')
 
-      const activeSignups = shift.shift_signups?.filter((s) => !s.cancelled_at).length || 0
+      const activeSignups = shift.shift_signups?.filter((s: { cancelled_at: string | null }) => !s.cancelled_at).length || 0
       if (activeSignups >= shift.capacity) {
         throw new Error('This shift is full')
       }

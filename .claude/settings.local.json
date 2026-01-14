@@ -10,7 +10,11 @@
       "Bash(npm test:*)",
       "Bash(npm run dev:*)",
       "Bash(tasklist:*)",
-      "Bash(netstat:*)"
+      "Bash(netstat:*)",
+      "Bash(npm run build:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_close"
     ]
   }
 }

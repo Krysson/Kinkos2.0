@@ -1,11 +1,34 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/utils/supabase/middleware'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
-const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password']
 const AUTH_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password']
 
 export async function middleware(request: NextRequest) {
-  const { supabase, response } = createClient(request)
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet: Array<{ name: string; value: string; options?: CookieOptions }>) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          response = NextResponse.next({
+            request,
+          })
+          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options))
+        },
+      },
+    }
+  )
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -13,7 +36,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route))
   const isProtectedRoute =
-    pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/profile')
+    pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/profile') || pathname.startsWith('/schedule') || pathname.startsWith('/announcements') || pathname.startsWith('/resources') || pathname.startsWith('/contacts')
   const isAdminRoute = pathname.startsWith('/admin')
 
   // Redirect authenticated users away from auth pages
@@ -30,9 +53,15 @@ export async function middleware(request: NextRequest) {
 
   // Check admin role for admin routes
   if (user && isAdminRoute) {
-    const { data: member } = await supabase.from('members').select('role').eq('auth_id', user.id).single()
+    const { data: member, error } = await supabase
+      .from('members')
+      .select('role')
+      .eq('auth_id', user.id)
+      .maybeSingle()
 
-    if (!member || !['admin', 'owner'].includes(member.role)) {
+    // If no member record exists or query failed, redirect to dashboard
+    // Also redirect if user doesn't have admin or owner role
+    if (error || !member || !['admin', 'owner'].includes(member.role)) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
   }

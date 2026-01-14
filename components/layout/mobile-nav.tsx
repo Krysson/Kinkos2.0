@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Calendar, User, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { useState } from 'react'
 import { mainNavItems, adminNavItems } from './nav-items'
 import { Button } from '@/components/ui/button'
@@ -63,8 +63,10 @@ export function MobileNav({ className, member }: MobileNavProps) {
           </Button>
         </SheetTrigger>
         <SheetContent side="right" className="w-[300px]">
+          <SheetHeader>
+            <SheetTitle>Navigation</SheetTitle>
+          </SheetHeader>
           <div className="py-6">
-            <h2 className="text-lg font-semibold mb-4">Navigation</h2>
             <div className="space-y-1">
               {mainNavItems.map((item) => {
                 const Icon = item.icon
