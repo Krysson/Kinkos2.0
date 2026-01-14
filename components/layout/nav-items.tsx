@@ -1,13 +1,14 @@
 import {
-  Home,
+  LayoutDashboard,
   Calendar,
   Megaphone,
-  FileText,
   Users,
-  User,
+  BookOpen,
+  Contact,
+  ShieldCheck,
   UserCog,
-  CalendarPlus,
-  Settings,
+  UserPlus,
+  CalendarPlus
 } from 'lucide-react'
 
 export type NavItem = {
@@ -21,52 +22,64 @@ export const mainNavItems: NavItem[] = [
   {
     title: 'Dashboard',
     href: '/dashboard',
-    icon: Home,
+    icon: LayoutDashboard
+  },
+  {
+    title: 'My Profile',
+    href: '/profile',
+    icon: UserCog
   },
   {
     title: 'Schedule',
     href: '/schedule',
-    icon: Calendar,
+    icon: Calendar
   },
   {
     title: 'Announcements',
     href: '/announcements',
-    icon: Megaphone,
+    icon: Megaphone
   },
   {
     title: 'Resources',
     href: '/resources',
-    icon: FileText,
+    icon: BookOpen
   },
   {
     title: 'Contacts',
     href: '/contacts',
-    icon: Users,
-  },
-  {
-    title: 'Profile',
-    href: '/profile',
-    icon: User,
-  },
+    icon: Contact
+  }
 ]
 
 export const adminNavItems: NavItem[] = [
   {
     title: 'Admin Dashboard',
     href: '/admin',
-    icon: Settings,
-    adminOnly: true,
+    icon: ShieldCheck,
+    adminOnly: true
+  },
+  {
+    title: 'Staff & Users',
+    href: '/admin/users',
+    icon: UserCog,
+    adminOnly: true
   },
   {
     title: 'Members',
     href: '/admin/members',
-    icon: UserCog,
-    adminOnly: true,
+    icon: Users,
+    adminOnly: true
+  },
+  {
+    title: 'Check-In',
+    href: '/check-in',
+    icon: UserPlus,
+    adminOnly: true
   },
   {
     title: 'Shifts',
     href: '/admin/shifts',
     icon: CalendarPlus,
-    adminOnly: true,
-  },
+    adminOnly: true
+  }
 ]

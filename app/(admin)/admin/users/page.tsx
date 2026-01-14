@@ -1,28 +1,29 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MemberManagementTable } from '@/components/admin/member-management-table'
+import { StaffManagementTable } from '@/components/admin/staff-management-table'
 import type { Member } from '@/lib/types'
 
-export default async function AdminMembersPage() {
+export default async function AdminUsersPage() {
   const supabase = await createServerSupabaseClient()
 
-  const { data: members } = await supabase
+  // Fetch only staff (Volunteers, Leads, Admins, Owners)
+  const { data: staff } = await supabase
     .from('members')
     .select('*')
-    .eq('role', 'member')
+    .in('role', ['owner', 'admin', 'lead', 'volunteer'])
     .order('created_at', { ascending: false })
 
   return (
     <div className='space-y-6'>
       <Card>
         <CardHeader>
-          <CardTitle>Member Management</CardTitle>
+          <CardTitle>Staff & User Management</CardTitle>
           <CardDescription>
-            View and manage all members, assign roles, and update statuses
+            Manage application users with administrative or volunteer privileges.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <MemberManagementTable initialMembers={(members as unknown as Member[]) || []} />
+          <StaffManagementTable initialStaff={(staff as unknown as Member[]) || []} />
         </CardContent>
       </Card>
     </div>

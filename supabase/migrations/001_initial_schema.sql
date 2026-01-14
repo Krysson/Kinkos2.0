@@ -36,7 +36,7 @@ CREATE TYPE resource_category AS ENUM ('policies', 'training', 'forms', 'links',
 -- ===========================================
 
 CREATE TABLE members (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     auth_id UUID UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
 
     -- Profile Info
@@ -78,7 +78,7 @@ CREATE INDEX idx_members_email ON members(email);
 -- ===========================================
 
 CREATE TABLE shifts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,
     description TEXT,
     location TEXT DEFAULT 'The Woodshed Orlando',
@@ -102,7 +102,7 @@ CREATE INDEX idx_shifts_status ON shifts(status);
 -- ===========================================
 
 CREATE TABLE shift_signups (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     shift_id UUID NOT NULL REFERENCES shifts(id) ON DELETE CASCADE,
     member_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
     signed_up_at TIMESTAMPTZ DEFAULT NOW(),
@@ -123,7 +123,7 @@ CREATE INDEX idx_shift_signups_active ON shift_signups(shift_id, member_id) WHER
 -- ===========================================
 
 CREATE TABLE announcements (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     priority announcement_priority DEFAULT 'normal',
@@ -144,7 +144,7 @@ CREATE INDEX idx_announcements_priority ON announcements(priority);
 -- ===========================================
 
 CREATE TABLE announcement_reads (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     announcement_id UUID NOT NULL REFERENCES announcements(id) ON DELETE CASCADE,
     member_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
     read_at TIMESTAMPTZ DEFAULT NOW(),
@@ -159,7 +159,7 @@ CREATE INDEX idx_announcement_reads_announcement ON announcement_reads(announcem
 -- ===========================================
 
 CREATE TABLE resources (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,
     description TEXT,
     url TEXT,
@@ -207,12 +207,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_members_updated_at ON members;
 CREATE TRIGGER update_members_updated_at BEFORE UPDATE ON members
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS update_shifts_updated_at ON shifts;
 CREATE TRIGGER update_shifts_updated_at BEFORE UPDATE ON shifts
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS update_announcements_updated_at ON announcements;
 CREATE TRIGGER update_announcements_updated_at BEFORE UPDATE ON announcements
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS update_resources_updated_at ON resources;
 CREATE TRIGGER update_resources_updated_at BEFORE UPDATE ON resources
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
@@ -234,6 +241,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION handle_new_user();
