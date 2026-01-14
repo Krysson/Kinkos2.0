@@ -1,43 +1,62 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { QueryProvider } from "@/components/providers/query-provider";
-import { Toaster } from "sonner";
-import { Footer } from "@/components/layout/footer";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Syne, Outfit, JetBrains_Mono } from 'next/font/google'
+import { QueryProvider } from '@/components/providers/query-provider'
+import { Toaster } from 'sonner'
+import './globals.css'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// Display font - geometric with personality, slightly brutalist edge
+const syne = Syne({
+  variable: '--font-display',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800']
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// Body font - geometric sans with warmth, premium feel
+const outfit = Outfit({
+  variable: '--font-body',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700']
+})
+
+// Mono font - distinctive, better ligatures than Roboto Mono
+const jetbrainsMono = JetBrains_Mono({
+  variable: '--font-mono',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '600']
+})
 
 export const metadata: Metadata = {
-  title: "KinkOS - The Woodshed Orlando",
-  description: "Venue management system for The Woodshed Orlando",
-};
+  title: 'KinkOS - The Woodshed Orlando',
+  description: 'Next-gen venue management system'
+}
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html
+      lang='en'
+      className='dark'>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div className="flex min-h-screen flex-col">
-          <div className="flex-1">
-            <QueryProvider>{children}</QueryProvider>
-          </div>
-          <Footer />
-        </div>
-        <Toaster richColors position="top-right" />
+        className={`${syne.variable} ${outfit.variable} ${jetbrainsMono.variable} font-body antialiased`}>
+        <QueryProvider>{children}</QueryProvider>
+        <Toaster
+          richColors
+          position='top-right'
+          toastOptions={{
+            style: {
+              background: 'hsl(270 12% 10%)',
+              border: '1px solid hsl(270 10% 20%)',
+              color: 'hsl(30 15% 92%)'
+            }
+          }}
+        />
       </body>
     </html>
-  );
+  )
 }
